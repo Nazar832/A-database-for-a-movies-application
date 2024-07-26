@@ -148,11 +148,10 @@ BEGIN
         WHERE column_name = 'updated_at' 
           AND table_schema = 'public'
     LOOP
-        EXECUTE format('
-            CREATE TRIGGER update_%I_updated_at
-            BEFORE UPDATE ON %I
-            FOR EACH ROW
-            EXECUTE FUNCTION update_updated_at_column();', rec.table_name, rec.table_name);
+        EXECUTE 'CREATE TRIGGER update_' || rec.table_name || '_updated_at ' ||
+                'BEFORE UPDATE ON ' || quote_ident(rec.table_name) || ' ' ||
+                'FOR EACH ROW ' ||
+                'EXECUTE FUNCTION update_updated_at_column();';
     END LOOP;
 END;
 $$ LANGUAGE plpgsql;
